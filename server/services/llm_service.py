@@ -35,17 +35,17 @@ class LLMService:
     async def generate_response(
         self, 
         messages: List[Dict[str, str]], 
-        content_context: List[Dict[str, Any]] = None,
+        content_context: Optional[List[Dict[str, Any]]] = None,
         stream: bool = False
     ) -> AsyncGenerator[Dict[str, Any], None]:
         """Generate AI response with fallback support"""
         
         # Enhance messages with content context
-        enhanced_messages = self._enhance_messages_with_context(messages, content_context)
+        enhanced_messages = self._enhance_messages_with_context(messages, content_context or [])
         
         # Try Groq first, fallback to OpenAI
         try:
-            if self.groq_client:
+            if self.groq_client is not None:
                 async for chunk in self._generate_with_groq(enhanced_messages, stream):
                     yield chunk
                 return
@@ -54,7 +54,7 @@ class LLMService:
         
         # Fallback to OpenAI
         try:
-            if self.openai_client:
+            if self.openai_client is not None:
                 async for chunk in self._generate_with_openai(enhanced_messages, stream):
                     yield chunk
                 return
@@ -172,7 +172,7 @@ class LLMService:
     def _enhance_messages_with_context(
         self, 
         messages: List[Dict[str, str]], 
-        content_context: List[Dict[str, Any]] = None
+        content_context: Optional[List[Dict[str, Any]]] = None
     ) -> List[Dict[str, str]]:
         """Enhance messages with content context from CMS"""
         
@@ -219,7 +219,7 @@ class LLMService:
                 }
             ]
             
-            if self.openai_client:
+            if self.openai_client is not None:
                 response = await self.openai_client.chat.completions.create(
                     model="gpt-5", # the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
                     messages=messages,

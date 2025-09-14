@@ -5,83 +5,8 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertChatMessageSchema } from "@shared/schema";
 
-// Mock imports for Python services (in real implementation, these would be proper HTTP calls)
-interface MCPClient {
-  fetch_content(content_type: string, query?: string): Promise<any[]>;
-  search_content(query: string, content_types?: string[]): Promise<any[]>;
-  create_draft_content(content_type: string, title: string, data: any): Promise<any>;
-}
-
-interface LLMService {
-  generate_response(messages: any[], content_context?: any[], stream?: boolean): AsyncGenerator<any>;
-  analyze_content_gap(query: string, available_content: any[]): Promise<any>;
-}
-
-interface AnalyticsService {
-  track_query(session_id: string, query: string, response_time_ms: number, success: boolean): Promise<void>;
-  track_content_gap(query: string, gap_data: any): Promise<void>;
-  get_analytics_summary(): Promise<any>;
-  get_query_trends(days?: number): Promise<any[]>;
-  get_top_queries(limit?: number): Promise<any[]>;
-  get_content_gaps(): Promise<any[]>;
-}
-
-// Mock service instances (in real implementation, these would call Python FastAPI endpoints)
-const mockMCPClient: MCPClient = {
-  async fetch_content(content_type: string, query?: string) {
-    // This would call the Python FastAPI endpoint
-    return [];
-  },
-  async search_content(query: string, content_types?: string[]) {
-    // This would call the Python FastAPI endpoint
-    return [];
-  },
-  async create_draft_content(content_type: string, title: string, data: any) {
-    // This would call the Python FastAPI endpoint
-    return null;
-  }
-};
-
-const mockLLMService: LLMService = {
-  async* generate_response(messages: any[], content_context?: any[], stream = false) {
-    // This would call the Python FastAPI endpoint
-    yield { chunk: "Mock response", done: true, response_time_ms: 500 };
-  },
-  async analyze_content_gap(query: string, available_content: any[]) {
-    // This would call the Python FastAPI endpoint
-    return { is_gap: false, priority: "low", suggested_content_type: "article" };
-  }
-};
-
-const mockAnalyticsService: AnalyticsService = {
-  async track_query(session_id: string, query: string, response_time_ms: number, success: boolean) {
-    // This would call the Python FastAPI endpoint
-  },
-  async track_content_gap(query: string, gap_data: any) {
-    // This would call the Python FastAPI endpoint
-  },
-  async get_analytics_summary() {
-    // This would call the Python FastAPI endpoint
-    return {
-      total_queries: 1247,
-      average_response_time_ms: 847,
-      success_rate: 94.2,
-      content_gaps_count: 23
-    };
-  },
-  async get_query_trends(days = 7) {
-    // This would call the Python FastAPI endpoint
-    return [];
-  },
-  async get_top_queries(limit = 10) {
-    // This would call the Python FastAPI endpoint
-    return [];
-  },
-  async get_content_gaps() {
-    // This would call the Python FastAPI endpoint
-    return [];
-  }
-};
+// Real HTTP clients for Python services
+import { mcpClient, llmService, analyticsService, type MCPClient, type LLMService, type AnalyticsService } from './services/python-client';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -103,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const broadcastAnalytics = async () => {
     if (analyticsClients.size > 0) {
       try {
-        const analytics = await mockAnalyticsService.get_analytics_summary();
+        const analytics = await analyticsService.get_analytics_summary();
         const message = JSON.stringify({ type: 'analytics_update', data: analytics });
         
         analyticsClients.forEach((client) => {
@@ -137,7 +62,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const startTime = Date.now();
 
       // Search for relevant content
-      const contentResults = await mockMCPClient.search_content(message, ['tours', 'hotels', 'guides']);
+      const contentResults = await mcpClient.search_content(message, ['tours', 'hotels', 'guides']);
       
       // Get conversation history
       const messages = [
@@ -157,7 +82,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let responseTime = 0;
 
         try {
-          for await (const chunk of mockLLMService.generate_response(messages, contentResults, true)) {
+          for await (const chunk of llmService.generate_response(messages, contentResults, true)) {
             if (chunk.chunk) {
               fullResponse += chunk.chunk;
             }
@@ -192,13 +117,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
 
           // Track analytics
-          await mockAnalyticsService.track_query(session_id, message, responseTime, true);
+          await analyticsService.track_query(session_id, message, responseTime, true);
 
           // Check for content gaps
           if (contentResults.length === 0) {
-            const gapAnalysis = await mockLLMService.analyze_content_gap(message, contentResults);
+            const gapAnalysis = await llmService.analyze_content_gap(message, contentResults);
             if (gapAnalysis.is_gap) {
-              await mockAnalyticsService.track_content_gap(message, gapAnalysis);
+              await analyticsService.track_content_gap(message, gapAnalysis);
               
               res.write(`data: ${JSON.stringify({
                 notification: 'Content gap detected',
@@ -219,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Non-streaming response
         const chunks: any[] = [];
         
-        for await (const chunk of mockLLMService.generate_response(messages, contentResults, false)) {
+        for await (const chunk of llmService.generate_response(messages, contentResults, false)) {
           chunks.push(chunk);
         }
 
@@ -244,7 +169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
 
-        await mockAnalyticsService.track_query(session_id, message, responseTime, true);
+        await analyticsService.track_query(session_id, message, responseTime, true);
 
         res.json({
           response: response.chunk,
@@ -263,7 +188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics endpoints
   app.get('/api/analytics', async (req, res) => {
     try {
-      const analytics = await mockAnalyticsService.get_analytics_summary();
+      const analytics = await analyticsService.get_analytics_summary();
       res.json(analytics);
     } catch (error) {
       console.error('Analytics error:', error);
@@ -274,7 +199,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/analytics/trends', async (req, res) => {
     try {
       const { days = '7' } = req.query;
-      const trends = await mockAnalyticsService.get_query_trends(parseInt(days as string));
+      const trends = await analyticsService.get_query_trends(parseInt(days as string));
       res.json(trends);
     } catch (error) {
       console.error('Trends error:', error);
@@ -285,7 +210,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/analytics/top-queries', async (req, res) => {
     try {
       const { limit = '10' } = req.query;
-      const topQueries = await mockAnalyticsService.get_top_queries(parseInt(limit as string));
+      const topQueries = await analyticsService.get_top_queries(parseInt(limit as string));
       res.json(topQueries);
     } catch (error) {
       console.error('Top queries error:', error);
@@ -295,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/content-gaps', async (req, res) => {
     try {
-      const contentGaps = await mockAnalyticsService.get_content_gaps();
+      const contentGaps = await analyticsService.get_content_gaps();
       res.json(contentGaps);
     } catch (error) {
       console.error('Content gaps error:', error);
@@ -312,7 +237,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'content_type, title, and data are required' });
       }
 
-      const result = await mockMCPClient.create_draft_content(content_type, title, data);
+      const result = await mcpClient.create_draft_content(content_type, title, data);
       
       if (result) {
         res.json({ success: true, draft: result });
