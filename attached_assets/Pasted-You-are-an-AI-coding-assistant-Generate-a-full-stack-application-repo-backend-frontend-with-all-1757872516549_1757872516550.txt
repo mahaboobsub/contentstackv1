@@ -1,0 +1,138 @@
+You are an AI coding assistant. Generate a full-stack application repo (backend + frontend) with all files, configs, and docs, implementing the following:
+
+🔧 Project Overview
+
+Build ContentIQ Chat Platform:
+A plug-and-play, CMS-aware, multilingual, analytics-powered AI chat assistant for Contentstack, deployable on Contentstack Launch, connected via MCP, registered in Developer Hub, and embeddable anywhere with a <script> snippet.
+
+📂 Monorepo Structure
+/contentiq-platform
+  /backend   (FastAPI + MCP + Redis + Docker)
+  /frontend  (Next.js + React SDK + Tailwind + Recharts + i18next)
+  launch.yaml
+  docker-compose.yml
+  README.md
+
+⚙️ Backend (FastAPI)
+
+Features to implement:
+
+/chat endpoint (SSE + WebSocket) with multi-provider LLM support (Groq primary, OpenAI fallback).
+
+MCP integration: all content fetch + draft creation via MCP Delivery + CMA.
+
+Multi-turn memory: store last 5 messages per session.
+
+Cache layer: Redis for repeated queries.
+
+Analytics:
+
+Track top queries, intents, gaps, response times.
+
+Push analytics reports into Contentstack CMS (via CMA).
+
+Admin-only endpoints:
+
+Approve auto-created drafts.
+
+Trigger analytics export.
+
+Provide Dockerfile + docker-compose.yml.
+
+Files to generate:
+main.py, config.py, mcp_client.py, llm_client.py, analytics.py, content_manager.py, models.py, requirements.txt, Dockerfile, docker-compose.yml.
+
+🎨 Frontend (Next.js + React SDK)
+
+Features to implement:
+
+Chat widget (<ChatWidget />) with:
+
+Typing indicators + avatars.
+
+Dark/light mode toggle.
+
+Rich cards (title, image, URL) when CMS content is referenced.
+
+Voice input + TTS output.
+
+Multi-language (i18next + CMS locales).
+
+Analytics dashboard:
+
+Live charts (Recharts).
+
+Floating widget: “What users are asking now.”
+
+Embeddable SDK:
+
+Provide useChat React hook.
+
+Provide <script src="..."> snippet for vanilla HTML embed.
+
+Files to generate:
+frontend/src/components/ChatWidget.tsx, frontend/src/hooks/useChat.ts, frontend/src/pages/index.tsx, frontend/src/pages/analytics.tsx, tailwind.config.js, i18n.ts, package.json, next.config.js.
+
+🔑 Contentstack Products Integration
+
+CMS:
+
+Use multiple content types in demo (Tours, FAQs, Blogs).
+
+Fetch via MCP Delivery.
+
+Auto-create draft entries via MCP CMA.
+
+Launch:
+
+Add launch.yaml config.
+
+Deploy frontend + backend to Launch.
+
+MCP:
+
+All queries go through MCP servers, no raw API calls.
+
+Developer Hub / OAuth:
+
+Replace API keys with OAuth.
+
+Add “Login with Contentstack” button in frontend UI.
+
+📊 Analytics / Intelligence
+
+Track queries, gaps, intents.
+
+Export analytics to Contentstack CMS as analytics_report entries.
+
+Suggest actions in frontend:
+
+Example: “Users asked 12 times for Paris budget trips → Click to auto-create draft.”
+
+🚀 Demo Flow (for Hackathon)
+
+Preload CMS with sample data. Show this exact script works:
+
+Ask: “What tours are in Italy?” → Fetch published CMS content.
+
+Ask: “Best budget trip to Paris?” → No match → Draft auto-created in CMS.
+
+Show: Analytics dashboard live update.
+
+Show: Draft entry visible in CMS dashboard.
+
+📄 Docs to Generate
+
+README.md:
+
+Setup (Backend, Frontend, Launch deployment).
+
+Env vars (CONTENTSTACK_API_KEY, DELIVERY_TOKEN, MANAGEMENT_TOKEN, GROQ_API_KEY, OPENAI_API_KEY, REDIS_URL).
+
+Quickstart commands.
+
+Demo script.
+
+Example .env files (backend + frontend).
+
+⚡ Deliver everything production-ready with clean code, comments, and working defaults.
