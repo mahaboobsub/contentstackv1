@@ -1,0 +1,137 @@
+1: Build a Chat Agent Platform for Developers
+Your challenge is to build a plug-and-play platform that helps developers create custom chat
+agents in just a few steps. These agents should be powered by LLMs (like Groq) and work with
+content stored in Contentstack.
+What You Need to Build
+1. LLM Model API - An API that:
+● Sends and receives chat messages (supports streaming responses)
+● Lets developers switch between different LLM providers (like OpenAI, Anthropic, etc.)
+● Connects to Contentstack’s Delivery APIs (via MCP) to fetch content based on the
+user’s question
+2. Chat SDK - A lightweight SDK that:
+● Makes it easy to embed chat agents in any website or app
+● Works well with React (ideally using React Hooks)
+● Connects to your LLM Model API to power conversations
+Developers should be able to use your platform to build domain-specific chat agents without
+needing to understand all the backend logic.
+For example, on a travel website using Contentstack, the chatbot should respond to: “What
+tours are available for Italy?”
+Your platform should take care of:
+● Understanding the question and querying the right content
+● Sending back a useful response — all with minimal setup
+Contentstack Products Purpose
+CMS To model and manage structured content
+Launch To build or embed your chat UI using its APIs
+Contentstack MCP To connect to the content delivery layer and pull live content
+Developer Hub (OAuth) To register the app and access stack-level APIs
+Ready to Configure
+Contentstack Logo
+AI-Powered
+Content Creation
+Complete guide to setting up Contentstack's Model Context Protocol (MCP) integration for your development environment. Build powerful AI-driven content experiences with natural language processing.
+
+AI-Powered
+Natural language processing
+Easy Setup
+Simple CLI integration
+Secure
+Authentication-based
+Step-by-step guide
+Setup Guide
+Follow these carefully crafted steps to configure your Contentstack MCP integration and unlock AI-powered content management
+
+1
+Set Up Contentstack Account
+Required
+Ensure you have access to a Contentstack account with necessary permissions for MCP integration.
+
+Ensure you have access to a Contentstack account or guide participants through the sign-up process. This provides access to advanced Contentstack features and APIs required for MCP integration.
+
+Access Contentstack Portal
+2
+Install Kickstarter Next.js Starter
+Install the Kickstarter Next.js starter from the Contentstack Marketplace to get base content models and sample entries.
+
+After logging into your Contentstack account, navigate to the marketplace and select the "Kickstarter Next.js" starter. This will automatically set up foundational content models and provide sample entries to help you understand the structure and get started quickly with your content management setup.
+
+View Kickstarter Next.js Starter
+3
+Authenticate with MCP
+Use the Contentstack CLI to authenticate with your organization and establish the connection for MCP integration.
+
+Run the authentication command to connect your local environment with your Contentstack organization. This step is essential for accessing your content and APIs.
+
+Authentication Command
+
+npx @contentstack/mcp --auth
+4
+Retrieve API Key and Project ID
+Get your Contentstack API key and Launch project ID required for MCP authentication and content access.
+
+You'll need these two essential credentials to configure your MCP integration. Follow the steps below to retrieve them from your Contentstack account.
+
+🔑 Getting Your Stack API Key:
+1. Select your Stack from the dashboard
+2. Navigate to Settings → Tokens → Seed Token (or Delivery Token)
+3. Copy the Stack API Key (starts with "blt...")
+🚀 Getting Your Launch Project ID:
+1. Navigate to Launch → Projects → Select your Launch project → Copy the Project ID from the URL (e.g., the ID after "/projects/")
+5
+Configure MCP in Cursor Settings
+Add the Contentstack MCP server configuration directly in Cursor IDE through the Tools & Integrations menu.
+
+📱 Cursor IDE Setup Steps:
+1. Open Cursor IDE → Cursor Settings → Tools & Integrations → New MCP Server
+2. Paste the configuration below and replace the placeholder values
+MCP Server Configuration
+
+{
+  "mcpServers": {
+    "launch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@contentstack/mcp"
+      ],
+      "env": {
+        "CONTENTSTACK_API_KEY": "your_api_key_here",
+        "CONTENTSTACK_LAUNCH_PROJECT_ID": "your_project_id_here",
+        "GROUPS": "launch"
+      }
+    },
+    "cma": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@contentstack/mcp"
+      ],
+      "env": {
+        "CONTENTSTACK_API_KEY": "your_api_key_here",
+        "GROUPS": "cma"
+      }
+    }
+  }
+}
+⚠️ Important: Replace Placeholder Values
+• CONTENTSTACK_API_KEY: Use your Stack API key from Step 4
+• CONTENTSTACK_LAUNCH_PROJECT_ID: Use your Launch project ID from Step 4
+• Groups: Keep as "launch" and "cma" for full access
+6
+Create with Natural Language
+Use the MCP integration to fetch and update content using natural language commands through your configured setup.
+
+With your MCP configuration active, you can now fetch home entries and replace content using natural language. The example below shows how to update content for the upcoming event.
+
+Test Prompts (Copy & Paste):
+Example 1: Update Homepage Content
+
+Fetch the home page entry and update the hero title to 'AI-Powered Content Management'
+Example 2: Fetch Blog Content
+
+Get all blog entries and show me the latest 3 posts
+Example 3: Create and Publish Content
+
+Create a new blog entry with title 'Getting Started with MCP' and publish to development
+Example 4: Update Footer Content
+
+Update the footer text to include copyright 2025 and save as draft

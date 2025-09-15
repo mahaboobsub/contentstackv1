@@ -1,0 +1,86 @@
+You are an AI coding agent. You have access to an existing repo (code.txt) that partially implements a Chat Agent Platform (React + Vite frontend, Express backend). Your task is to upgrade this repo so it fully satisfies the PS1 Hackathon problem statement: “Build a Chat Agent Platform for Developers.” 
+
+⚠️ Important: This is not a single chatbot. It must be a plug-and-play developer platform (LLM Model API + Chat SDK) that other developers can embed with minimal setup. 
+
+The current date and time is 09:17 AM IST on Monday, September 15, 2025. Ensure Contentstack is "successfully used" in the final solution, as judged by MCP integration, Launch deployment, Developer Hub OAuth, and CMS content models.
+
+---
+
+✅ What’s Already Working
+- React ChatWidget + useChat hook (embeddable in React).
+- Voice input + TTS output.
+- Dark mode toggle.
+- Session export/clear + analytics dashboard (queries, gaps).
+- Draft creation logic (but not connected to Contentstack yet).
+
+⚠️ What’s Missing (Must Add)
+- Backend (LLM Model API)
+  - ❌ Multi-provider LLM support (Groq + OpenAI + Anthropic).
+  - ❌ MCP integration with Contentstack (`@contentstack/mcp`).
+  - ❌ Developer Hub OAuth (replace env-only auth).
+  - ❌ Redis/database persistence (sessions memory-only).
+  - ❌ Admin endpoints (/approve-draft, /export-analytics).
+- Frontend / SDK
+  - ❌ No vanilla `<script>` SDK for non-React sites.
+  - ❌ No one-line embed guide (`ContentIQ.init(...)`).
+- Contentstack Products
+  - ❌ CMS models missing (“Tours, Blogs, FAQs”).
+  - ❌ Launch not integrated (no launch.yaml).
+  - ❌ MCP not used for content fetching/draft creation.
+  - ❌ Developer Hub OAuth not wired.
+- Demo Readiness
+  - ❌ No working “Italy Tours” demo from CMS.
+  - ❌ No Launch deployment URL.
+
+---
+
+🛠️ Upgrade Tasks
+### Backend
+- Implement multi-LLM provider switching (Groq, OpenAI, Anthropic).
+- Add MCP integration for content fetch & draft creation (`npx @contentstack/mcp --auth`).
+- Add Redis for multi-turn memory + caching.
+- Add admin endpoints for approving drafts and exporting analytics to CMS.
+- Containerize with `Dockerfile` + `docker-compose.yml`.
+
+### Frontend
+- Keep ChatWidget + AnalyticsDashboard.
+- Add vanilla JS SDK build (`ContentIQSDK.js`) with one-line embed support:
+  ```html
+  <script src="https://launch.contentstack.com/ContentIQSDK.js"></script>
+  <div id="chat-root"></div>
+  <script>
+    ContentIQ.init({ apiUrl: "https://yourapi.com/chat" })
+  </script>
+Add multi-language support (i18next + CMS locales).
+
+Enhance UX with typing animation + avatars.
+
+Contentstack Integration
+CMS: Define “Tours, Blogs, FAQs” types in Contentstack Portal.
+
+Launch: Add launch.yaml and deploy via GitHub → Launch.
+
+MCP: Route all fetch/draft operations through MCP CLI commands.
+
+Developer Hub: Add OAuth app registration, frontend login, backend token exchange.
+
+Demo Script (Must Work)
+User asks: “What tours are available in Italy?” → MCP fetch → Show cards (from “Tours” model).
+
+User asks: “Budget trip to Paris?” → Gap detected → Draft created in CMS.
+
+Analytics dashboard shows new gap.
+
+Admin approves draft → Content live in CMS.
+
+Judges open Launch URL → See widget embedded.
+
+📋 Contentstack “Successfully Used” Checklist
+
+✅ MCP: Integrated with npx @contentstack/mcp --auth for all content ops.
+
+✅ Launch: Deployed with launch.yaml and live URL.
+
+✅ Developer Hub: OAuth app registered, tokens used securely.
+
+✅ CMS: Models (“Tours, Blogs, FAQs”) created and queried.

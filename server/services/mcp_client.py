@@ -29,7 +29,7 @@ class MCPClient:
             logger.error(f"Failed to initialize MCP connection: {e}")
             return False
     
-    async def fetch_content(self, content_type: str, query: str = None) -> List[Dict[str, Any]]:
+    async def fetch_content(self, content_type: str, query: Optional[str] = None) -> List[Dict[str, Any]]:
         """Fetch content via MCP Delivery API"""
         try:
             params = {
@@ -68,7 +68,7 @@ class MCPClient:
             logger.error(f"Error creating draft content via MCP: {e}")
             return None
     
-    async def search_content(self, query: str, content_types: List[str] = None) -> List[Dict[str, Any]]:
+    async def search_content(self, query: str, content_types: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """Search content across multiple content types"""
         try:
             params = {

@@ -5,8 +5,10 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertChatMessageSchema } from "@shared/schema";
 
-// Real HTTP clients for Python services
-import { mcpClient, llmService, analyticsService, type MCPClient, type LLMService, type AnalyticsService } from './services/python-client';
+// Node.js services
+import { llmService } from './services/llm';
+import { mcpService } from './services/mcp';
+import { analyticsService } from './services/analytics';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -62,7 +64,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const startTime = Date.now();
 
       // Search for relevant content
-      const contentResults = await mcpClient.search_content(message, ['tours', 'hotels', 'guides']);
+      const contentResults = await mcpService.search_content(message, ['tours', 'hotels', 'guides']);
       
       // Get conversation history
       const messages = [
@@ -237,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'content_type, title, and data are required' });
       }
 
-      const result = await mcpClient.create_draft_content(content_type, title, data);
+      const result = await mcpService.create_draft_content(content_type, title, data);
       
       if (result) {
         res.json({ success: true, draft: result });

@@ -1,0 +1,77 @@
+What the Challenge Is Asking
+
+You need to create a platform (not just a single chatbot) that other developers can use to easily build their own custom chat agents.
+
+Think of it as:
+👉 Instead of hardcoding one chatbot for one website, you’re building a plug-and-play framework where devs can hook in Contentstack + LLMs (Groq, OpenAI, Anthropic) with just a few steps.
+
+Two Core Deliverables
+1. LLM Model API (Backend)
+
+A server (e.g., FastAPI/Node.js) that:
+
+Chat Streaming: Accepts chat messages and streams back LLM responses (token by token).
+
+Multi-Provider Support: Can switch between Groq, OpenAI, Anthropic, etc.
+(e.g., devs can set provider="Groq" in config).
+
+Contentstack Integration: Uses MCP (Model Context Protocol) to fetch relevant content from Contentstack CMS.
+Example: User asks “What tours are available for Italy?” → Your API fetches “Italy Tours” entries from Contentstack.
+
+2. Chat SDK (Frontend Dev Kit)
+
+A lightweight JavaScript/React SDK that:
+
+Provides an easy-to-use useChat hook or ChatWidget component.
+
+Lets developers drop a chat agent into any site/app with 1–2 lines of code.
+
+Automatically connects to your LLM Model API.
+
+⚡ Example:
+
+import { ChatWidget } from "contentiq-chat-sdk";
+
+<ChatWidget apiUrl="https://yourapi.com/chat" />
+
+What Your Platform Should Handle Automatically
+
+Understanding intent (turns “tours in Italy?” into a query to Contentstack CMS).
+
+Fetching CMS content (through Delivery API via MCP).
+
+Returning a natural response from the LLM (not just raw CMS data).
+
+Minimal setup for developers (they don’t need to know backend logic).
+
+Contentstack Products You MUST Use
+
+CMS → Where the structured content (e.g., “Tours”, “Products”, “Blogs”) lives.
+(You fetch entries from here to answer questions).
+
+Launch → Use it to host or embed your chat widget inside the Contentstack ecosystem.
+(Judges want to see deployment through Launch, not just Replit/localhost).
+
+MCP → The official protocol for querying live content from Contentstack (instead of directly calling APIs).
+(This makes your integration “official” and modern).
+
+Developer Hub (OAuth) → Register your app here to securely access Contentstack APIs with stack-level credentials.
+(This shows you’re using Contentstack’s full developer workflow).
+
+End Result (Example Demo)
+
+Imagine a travel site using your platform:
+
+Visitor asks: “What tours are available for Italy?”
+
+Your SDK → sends query to API.
+
+API → LLM interprets → fetches “Italy Tours” from Contentstack (via MCP).
+
+LLM crafts a nice response:
+“Here are 3 tours in Italy: Rome City Tour, Venice Canals Experience, Tuscany Wine Trail. Would you like prices?”
+
+The dev didn’t need to code any of this logic — your platform handled it.
+
+✅ In summary:
+This PS is about building a developer-friendly toolkit (API + SDK) that makes it super easy to add an LLM-powered, CMS-aware chatbot to any site. The killer part is showing how Contentstack CMS + MCP + Launch + OAuth all fit together in your solution.
